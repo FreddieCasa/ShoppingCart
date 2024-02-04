@@ -3,10 +3,8 @@ import lt.techin.shoppingcart.ShoppingCartModificationException;
 import lt.techin.shoppingcart.ShoppingItem;
 import lt.techin.shoppingcart.test.BaseShoppingCartTest;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class ShoppingCartTest extends BaseShoppingCartTest {
@@ -17,37 +15,48 @@ public class ShoppingCartTest extends BaseShoppingCartTest {
     @Override
     protected ShoppingCart getLockedShoppingCartWithDiscountAndTaxApplied(ShoppingCart shoppingCart, int discountRate, int taxRate) {
 
+        return getLockedFromModificationShoppingCart(getDiscountAppliedShoppingCart(getTaxAppliedShoppingCart(shoppingCart, taxRate), discountRate));
+
+    }
+
+    @Override
+    protected ShoppingCart getDiscountAppliedShoppingCart(ShoppingCart shoppingCart, int discountRate) {
+
+
+        List<ShoppingItem> itemsWithTax = shoppingCart.getShoppingCartItems().stream()
+                .map(item -> new ShoppingItem(item.getName(), (item.getPrice()) * (discountRate / 100.0)))
+                .collect(Collectors.toList());
+
+
         ShoppingCartImpl shoppingCart2 = new ShoppingCartImpl();
-        Iterator var2 = shoppingCart.getShoppingCartItems().iterator();
+        Iterator var2 = itemsWithTax.iterator();
 
         while (var2.hasNext()) {
             ShoppingItem predefinedShoppingItem = (ShoppingItem) var2.next();
             shoppingCart2.addShoppingItem(predefinedShoppingItem);
         }
 
-        shoppingCart2.setLockedStatus();
 
         return shoppingCart2;
 
     }
 
     @Override
-    protected ShoppingCart getDiscountAppliedShoppingCart(ShoppingCart shoppingCart, int discountRate) {
-        return new ShoppingCartImpl();
-    }
-
-    @Override
     protected ShoppingCart getTaxAppliedShoppingCart(ShoppingCart shoppingCart, int taxRate) {
-        ShoppingCartImpl shoppingCart2 = new ShoppingCartImpl();
-        Iterator var2 = shoppingCart.getShoppingCartItems().iterator();
 
+        List<ShoppingItem> itemsWithTax = shoppingCart.getShoppingCartItems().stream()
+                .map(item -> new ShoppingItem(item.getName(), (item.getPrice() + (item.getPrice()) * (taxRate / 100.0))))
+                .collect(Collectors.toList());
+
+
+        ShoppingCartImpl shoppingCart2 = new ShoppingCartImpl();
+        Iterator var2 = itemsWithTax.iterator();
 
         while (var2.hasNext()) {
             ShoppingItem predefinedShoppingItem = (ShoppingItem) var2.next();
             shoppingCart2.addShoppingItem(predefinedShoppingItem);
         }
 
-        shoppingCart2.applyTax(taxRate);
 
         return shoppingCart2;
 
@@ -74,9 +83,6 @@ public class ShoppingCartTest extends BaseShoppingCartTest {
     private static class ShoppingCartImpl implements ShoppingCart {
         private final Collection<ShoppingItem> shoppingItems = new HashSet<>();
         private boolean lockedStatus = false;
-
-        private boolean taxStatus = false;
-        private boolean discountStatus = false;
 
 
         private ShoppingCartImpl() {
@@ -124,16 +130,6 @@ public class ShoppingCartTest extends BaseShoppingCartTest {
             this.lockedStatus = true;
         }
 
-        public void applyTax(int tax) {
-//            this.taxStatus = true;
 
-
-
-
-        }
-
-        public void setDiscountStatus() {
-//            this.discountStatus = true;
-        }
     }
 }
