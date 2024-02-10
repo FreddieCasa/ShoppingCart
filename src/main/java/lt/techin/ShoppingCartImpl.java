@@ -3,30 +3,51 @@ package lt.techin;
 import lt.techin.shoppingcart.ShoppingCart;
 import lt.techin.shoppingcart.ShoppingCartModificationException;
 import lt.techin.shoppingcart.ShoppingItem;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ShoppingCartImpl implements ShoppingCart {
-    private final Collection<ShoppingItem> shoppingItems = new HashSet<>();
-    private boolean lockedStatus = false;
+    private Collection<ShoppingItem> shoppingItems = new HashSet<>();
+    private int discountRate = 0;
+    private int taxRate = 0;
 
-    public ShoppingCartImpl() {
+
+    public ShoppingCartImpl(ShoppingCart shoppingCart) {
+
+        this.shoppingItems = shoppingCart.getShoppingCartItems();
+
     }
 
+    public ShoppingCartImpl(ShoppingCart shoppingCart, int rate) {
+        this.shoppingItems = shoppingCart.getShoppingCartItems();
+
+    }
+
+
+    public ShoppingCartImpl(ShoppingCart shoppingCart, int discountRate, int taxRate) {
+        this.shoppingItems = shoppingCart.getShoppingCartItems();
+        this.discountRate = discountRate;
+        this.taxRate = taxRate;
+
+    }
+
+
     public void addShoppingItem(ShoppingItem shoppingItem) throws ShoppingCartModificationException {
-        if (this.lockedStatus) {
+        if (this.shoppingItems == Collections.unmodifiableCollection(this.shoppingItems)) {
             throw new ShoppingCartModificationException();
         } else {
             shoppingItems.add(shoppingItem);
         }
 
-
     }
 
     public void removeShoppingItem(ShoppingItem shoppingItem) {
 
-        if (this.lockedStatus) {
+        if (this.shoppingItems == Collections.unmodifiableCollection(this.shoppingItems)) {
             throw new ShoppingCartModificationException();
         } else {
             this.shoppingItems.remove(shoppingItem);
@@ -35,7 +56,7 @@ public class ShoppingCartImpl implements ShoppingCart {
     }
 
     public void clearShoppingCart() {
-        if (this.lockedStatus) {
+        if (this.shoppingItems == Collections.unmodifiableCollection(this.shoppingItems)) {
             throw new ShoppingCartModificationException();
         } else {
             this.shoppingItems.clear();
@@ -49,12 +70,53 @@ public class ShoppingCartImpl implements ShoppingCart {
 
     public double calculateTotalPrice() {
 
-        return this.shoppingItems.stream().mapToDouble(ShoppingItem::getPrice).sum();
+        if (discountRate > 0 && taxRate > 0) {
+
+            this.shoppingItems = this.shoppingItems.stream()
+                    .map(item -> new ShoppingItem(item.getName(), (item.getPrice()) * (discountRate / 100.0)))
+                    .collect(Collectors.toList());
+
+            this.shoppingItems = this.shoppingItems.stream()
+                    .map(item -> new ShoppingItem(item.getName(), (item.getPrice() + (item.getPrice()) * (taxRate / 100.0))))
+                    .collect(Collectors.toList());
+
+            return this.shoppingItems.stream().mapToDouble(ShoppingItem::getPrice).sum();
+
+        } else if (discountRate > 0 ) {
+            this.shoppingItems = this.shoppingItems.stream()
+                    .map(item -> new ShoppingItem(item.getName(), (item.getPrice()) * (discountRate / 100.0)))
+                    .collect(Collectors.toList());
+            return this.shoppingItems.stream().mapToDouble(ShoppingItem::getPrice).sum();
+
+        } else if (taxRate > 0) {
+
+            this.shoppingItems = this.shoppingItems.stream()
+                    .map(item -> new ShoppingItem(item.getName(), (item.getPrice() + (item.getPrice()) * (taxRate / 100.0))))
+                    .collect(Collectors.toList());
+
+            return this.shoppingItems.stream().mapToDouble(ShoppingItem::getPrice).sum();
+
+        } else {
+            return this.shoppingItems.stream().mapToDouble(ShoppingItem::getPrice).sum();
+        }
+
     }
 
-    public void setLockedStatus() {
-        this.lockedStatus = true;
-    }
+
+//    public void applyTax(int rate){
+//
+//       this.shoppingItems = this.shoppingItems.stream()
+//                .map(item -> new ShoppingItem(item.getName(), (item.getPrice() + (item.getPrice()) * (rate / 100.0))))
+//                .collect(Collectors.toList());
+//
+//    }
+//    public void applyDiscount(int rate){
+//        this.shoppingItems = this.shoppingItems.stream()
+//                .map(item -> new ShoppingItem(item.getName(), (item.getPrice()) * (rate / 100.0)))
+//                .collect(Collectors.toList());
+//
+//
+//    }
 
 
 }
