@@ -82,7 +82,7 @@ public class ShoppingCartImpl implements ShoppingCart {
 
             return this.shoppingItems.stream().mapToDouble(ShoppingItem::getPrice).sum();
 
-        } else if (discountRate > 0 ) {
+        } else if (discountRate > 0) {
             this.shoppingItems = this.shoppingItems.stream()
                     .map(item -> new ShoppingItem(item.getName(), (item.getPrice()) * (discountRate / 100.0)))
                     .collect(Collectors.toList());
