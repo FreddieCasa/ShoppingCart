@@ -1,8 +1,9 @@
+package lt.techin;
+
+
 import lt.techin.shoppingcart.ShoppingCart;
-import lt.techin.shoppingcart.ShoppingCartModificationException;
 import lt.techin.shoppingcart.ShoppingItem;
 import lt.techin.shoppingcart.test.BaseShoppingCartTest;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -63,7 +64,6 @@ public class ShoppingCartTest extends BaseShoppingCartTest {
 
     }
 
-
     @Override
     protected ShoppingCart getLockedFromModificationShoppingCart(ShoppingCart shoppingCart) {
 
@@ -80,56 +80,4 @@ public class ShoppingCartTest extends BaseShoppingCartTest {
     }
 
 
-    private static class ShoppingCartImpl implements ShoppingCart {
-        private final Collection<ShoppingItem> shoppingItems = new HashSet<>();
-        private boolean lockedStatus = false;
-
-
-        private ShoppingCartImpl() {
-        }
-
-        public void addShoppingItem(ShoppingItem shoppingItem) throws ShoppingCartModificationException {
-            if (this.lockedStatus) {
-                throw new ShoppingCartModificationException();
-            } else {
-                shoppingItems.add(shoppingItem);
-            }
-
-
-        }
-
-        public void removeShoppingItem(ShoppingItem shoppingItem) {
-
-            if (this.lockedStatus) {
-                throw new ShoppingCartModificationException();
-            } else {
-                this.shoppingItems.remove(shoppingItem);
-            }
-
-        }
-
-        public void clearShoppingCart() {
-            if (this.lockedStatus) {
-                throw new ShoppingCartModificationException();
-            } else {
-                this.shoppingItems.clear();
-            }
-
-        }
-
-        public Collection<ShoppingItem> getShoppingCartItems() {
-            return Collections.unmodifiableCollection(this.shoppingItems);
-        }
-
-        public double calculateTotalPrice() {
-
-            return this.shoppingItems.stream().mapToDouble(ShoppingItem::getPrice).sum();
-        }
-
-        public void setLockedStatus() {
-            this.lockedStatus = true;
-        }
-
-
-    }
 }
