@@ -3,11 +3,8 @@ package lt.techin;
 
 import lt.techin.shoppingcart.ShoppingCart;
 
-import lt.techin.shoppingcart.ShoppingItem;
-import lt.techin.shoppingcart.test.BaseShoppingCartTest;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import lt.techin.shoppingcart.test.BaseShoppingCartTest;
 
 
 public class ShoppingCartTest extends BaseShoppingCartTest {

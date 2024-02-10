@@ -6,12 +6,10 @@ import lt.techin.shoppingcart.ShoppingItem;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class ShoppingCartImpl implements ShoppingCart {
-    private Collection<ShoppingItem> shoppingItems = new HashSet<>();
+    private Collection<ShoppingItem> shoppingItems;
     private int discountRate = 0;
     private int taxRate = 0;
 
@@ -21,12 +19,6 @@ public class ShoppingCartImpl implements ShoppingCart {
         this.shoppingItems = shoppingCart.getShoppingCartItems();
 
     }
-
-    public ShoppingCartImpl(ShoppingCart shoppingCart, int rate) {
-        this.shoppingItems = shoppingCart.getShoppingCartItems();
-
-    }
-
 
     public ShoppingCartImpl(ShoppingCart shoppingCart, int discountRate, int taxRate) {
         this.shoppingItems = shoppingCart.getShoppingCartItems();
@@ -101,22 +93,6 @@ public class ShoppingCartImpl implements ShoppingCart {
         }
 
     }
-
-
-//    public void applyTax(int rate){
-//
-//       this.shoppingItems = this.shoppingItems.stream()
-//                .map(item -> new ShoppingItem(item.getName(), (item.getPrice() + (item.getPrice()) * (rate / 100.0))))
-//                .collect(Collectors.toList());
-//
-//    }
-//    public void applyDiscount(int rate){
-//        this.shoppingItems = this.shoppingItems.stream()
-//                .map(item -> new ShoppingItem(item.getName(), (item.getPrice()) * (rate / 100.0)))
-//                .collect(Collectors.toList());
-//
-//
-//    }
 
 
 }
